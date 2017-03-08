@@ -13,7 +13,26 @@ var svg = d3.select('.chart')
 d3.csv('./timeline.csv', function(err, data){
   if (err) throw err;
 
+  var parseYear = d3.timeParse('%Y');
+
+  // clean the data source
+  var data = data.map( (d) => {
+    var cleanDatum = {};
+    d3.keys(d).forEach(function(k) {
+      cleanDatum[k.trim()] = d[k].trim();
+    });
+    return cleanDatum;
+  });
+
+  // format the data
+  data.forEach( (d) => {
+    d.Birthdate = parseYear(d.Birthdate);
+    d.Deathdate = parseYear(d.Deathdate);
+    d.Rank      = +d.Rank;
+  });
+
   console.log(data);
+
 });
 
 // Make chart responsive using viewBox
