@@ -1,15 +1,15 @@
-svg{ background: lightgrey;}
+svg{ background: #f3f3f3; border: 1px solid lightgrey; }
 .clergy-red{stroke: red; stroke-width:1}
 .clergy-green{stroke: green; stroke-width:1}
-div.tooltip {
+.tooltip {
     position: absolute;
     text-align: center;
-    width: 105px;
-    height: 28px;
-    padding: 2px;
+    padding: 5px;
     font: 12px sans-serif;
     background: lightsteelblue;
     border: 0px;
     border-radius: 4px;
     pointer-events: none;
 }
+.tooltip .name{ text-align: center; display: block; }
+.legend{font-size: 11px; fill: #9c9797}

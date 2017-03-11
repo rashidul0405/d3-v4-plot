@@ -1,10 +1,11 @@
 Birthdate, Deathdate, ClergyName, Rank, Image
-1971, 2011, Anwar al-Awlaki, +1, https://unsplash.it/200
-1938, , Ahmad Jibril, +1, https://unsplash.it/200
-1703, 1792, Abdul Wahhab, +1
-1960, , Hamza Yusuf, 0, https://unsplash.it/200
-1972, , Suhaib Webb, 0, https://unsplash.it/200
-1975, , Yaser Qadhi , 0, https://unsplash.it/200
-1978, ,Nouman Ali Khan, 0, https://unsplash.it/200
-1963, , Yaqoubi, 0, https://unsplash.it/200
-1971, , Abu Bakr al-Baghdadi, +1, https://unsplash.it/200
+1971, 2011, Anwar al-Awlaki, +1, images/anwarawlaki.jpeg
+1263, 1328, Ibn Taymiyyah, 0, images/ibntaymiyyah.jpg
+1938, , Ahmad Jibril, +1, images/ahmedjibril.jpeg
+1703, 1792, Abdul Wahhab, +1, images/AbdulWahhab.jpeg
+1960, , Hamza Yusuf, 0, images/HamzaYusuf.jpeg
+1972, , Suhaib Webb, 0, images/SuhaibWebb.jpeg
+1975, , Yaser Qadhi , 0, images/YaserQadhi.jpeg
+1978, ,Nouman Ali Khan, 0, images/NoumanAliKhan.jpeg
+1963, , Yaqoubi, 0, images/Yaqoubi.jpeg
+1971, , Abu Bakr al-Baghdadi, +1, images/AbuBakral-Baghdadi.jpeg

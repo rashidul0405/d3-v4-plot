@@ -2,13 +2,15 @@ var margin = { top: 10, right: 20, bottom: 20, left: 20},
   width = 800 - margin.left - margin.right,
   height = 400 - margin.top - margin.bottom,
   circleRadius = 25,
-  imageHeight = imageWidth = circleRadius * 2;
+  yScaleValue = 100,
+  imageHeight = imageWidth = circleRadius * 2,
+  legends = [{'color': 'red', 'text': 'Most Hated'}, {'color': 'green', 'text': 'Most Liked'}];
 
 var svg = d3.select('.chart')
   .append('svg')
     .attr('width', width + margin.left + margin.right)
     .attr('height', height + margin.top + margin.bottom)
-    // .call(responsivefy)
+    .call(responsivefy)
   .append('g')
     .attr('transform', `translate (${margin.left}, ${margin.top})`);
 
@@ -26,11 +28,8 @@ d3.csv('./timeline.csv', function(err, data){
   });
 
   // format the data
-  // var parseYear = d3.timeParse('%Y');
   let id = 1; // for image url mapping
   data.forEach( (d) => {
-    // d.Birthdate = parseYear(d.Birthdate);
-    // d.Deathdate = parseYear(d.Deathdate);
     d.id = id;
     d.Birthdate = +d.Birthdate;
     d.Deathdate = +d.Deathdate;
@@ -39,9 +38,9 @@ d3.csv('./timeline.csv', function(err, data){
   });
 
   // define the tooltip container
-  var tipContainer = d3.select("body").append("div")
-    .attr("class", "tooltip")
-    .style("opacity", 0);
+  var tipContainer = d3.select('body').append('div')
+    .attr('class', 'tooltip')
+    .style('opacity', 0);
 
   // build the x axis
   var xScale = d3.scaleLinear()
@@ -52,30 +51,35 @@ d3.csv('./timeline.csv', function(err, data){
   var xAxis = d3.axisBottom(xScale)
     .ticks(10);
 
-  svg
+  var gX = svg
     .append('g')
+      .attr('id', 'x-axis')
       .attr('transform', `translate(0, ${height})`)
     .call(xAxis);
 
   // do the dirty work ;) build the plot
-  var circles = svg
+  var content = svg
+    .append('g')
+      .attr('class', 'content');
+
+  var circles = content
     .selectAll('.clergy')
     .data(data)
     .enter()
     .append('g')
-    .attr('class', 'clergy')
-    .attr('transform', d => {
-      return `translate(${xScale(d.Birthdate)}, 50)`;
-    });
+      .attr('class', 'clergy')
+      .attr('transform', d => {
+        return `translate(${xScale(d.Birthdate)}, ${yScaleValue})`;
+      });
 
   // append the image as pattern
   circles
     .append('pattern')
-    .attr('id', d => d.id)
-    .attr('x', 0)
-    .attr('y', 0)
-    .attr('width', 1)
-    .attr('height', 1)
+      .attr('id', d => d.id)
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('width', 1)
+      .attr('height', 1)
     .append('image')
       .attr('x', 0)
       .attr('y', 0)
@@ -86,31 +90,84 @@ d3.csv('./timeline.csv', function(err, data){
   // create circles and fill with corresponding images
   circles
     .append('circle')
-    .attr('r', circleRadius)
-    .attr('cx', 0)
-    .attr('cy', 0)
-    .attr('class', d => d.Rank ? 'clergy-green' : 'clergy-red')
-    .style("fill", d => d.Image ?`url(#${d.id})` : 'steelblue')
-    .style("fill-opacity", 0.5)
+      .attr('r', circleRadius)
+      .attr('cx', 0)
+      .attr('cy', 0)
+      .attr('class', d => d.Rank ? 'clergy-green' : 'clergy-red')
+      .style('fill', d => d.Image ?`url(#${d.id})` : 'steelblue')
+    // .style('fill-opacity', 0.5)
     .on('mouseover', function(d, i){
       tipContainer
         .transition()
           .duration(200)
-          .style("opacity", .9);
+          .style('opacity', .9);
       tipContainer
-        .html(`${d.ClergyName} <br /> ${d.Birthdate} - ${d.Deathdate ? d.Deathdate : ''}`)
-        .style("left", (d3.event.pageX) + "px")
-        .style("top", (d3.event.pageY - 28) + "px");
+        .html(createTooltipHTML(d))
+        .style('left', `${d3.event.pageX}px`)
+        .style('top', `${d3.event.pageY - 28}px`);
     })
     .on('mouseout', function(d, i){
       tipContainer.transition()
         .duration(500)
-        .style("opacity", 0);
+        .style('opacity', 0);
     });
 
-  console.log(data);
+    // build legends
+  var legend = svg
+    .selectAll('.legend')
+    .data(legends)
+    .enter()
+    .append('g')
+      .attr('class', 'legend')
+      .attr('transform', (d, i) => `translate(0, ${i * 20})` );
 
+  // draw legend colored rectangles
+  legend
+    .append('circle')
+      .attr('cx', width - 5)
+      .attr('cy', 8)
+      .attr('r', 5)
+      .style('fill', d => d.color);
+
+  // draw legend text
+  legend
+  .append('text')
+      .attr('x', width - 15)
+      .attr('y', 8)
+      .attr('dy', '.35em')
+      .style('text-anchor', 'end')
+      .text( d => d.text );
+
+  // build zoom behavior on x-axis
+  var zoom = d3.zoom()
+    .on("zoom", zoomed);
+
+  svg.call(zoom);
+
+  function zoomed() {
+    gX.transition().duration(50).call(xAxis.scale(d3.event.transform.rescaleX(xScale)));
+
+    var newXScale = d3.event.transform.rescaleX(xScale);
+    circles.attr('transform', d => {
+      return `translate(${newXScale(d.Birthdate)}, ${yScaleValue})`;
+    })
+  }
 });
+
+// crate tooltip content
+function createTooltipHTML(d){
+  // vat tweets = '';
+  // d.Tweets.forEach(t => {
+  //   tweets += t;
+  // });
+  return (
+    `<span class="name">${d.ClergyName}</span> <hr />
+    Birthdate: ${d.Birthdate} <br />
+    Deathdate: ${d.Deathdate ? d.Deathdate : '-'} <br />`
+    // Description of clergy: ${d.ClergyDetails}`
+    // Tweets: ${tweets}
+  );
+}
 
 // Make chart responsive using viewBox
 function responsivefy(svg) {

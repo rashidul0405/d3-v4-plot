@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "browser-sync start -s -f index.html src --no-ui --no-notify"
+    "start": "browser-sync start -s -f index.html timeline.csv images src --no-ui --no-notify"
   },
   "repository": {},
   "author": "Md Rashidul Islam <rashidul0405@gmail.com>",
